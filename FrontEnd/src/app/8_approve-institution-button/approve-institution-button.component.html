@@ -1,0 +1,7 @@
+<ion-item>
+    <ion-label position="stacked">New Institution Address</ion-label>
+    <ion-input clearInput (input)="validateAddress($event.target.value)" placeholder="Enter Address of Institution"></ion-input>
+    <ion-buttons slot="end">
+      <ion-button (click)="approveInstitution()">Go <ion-icon slot="end" name="arrow-forward"></ion-icon></ion-button>
+    </ion-buttons>
+  </ion-item>

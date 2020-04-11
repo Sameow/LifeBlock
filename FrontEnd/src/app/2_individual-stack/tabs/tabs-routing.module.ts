@@ -38,6 +38,16 @@ const routes: Routes = [
         ]
       },
       {
+        path: 'viewGivenFeedback',
+        children: [
+          {
+            path: '',
+            loadChildren: () =>
+              import('../viewGivenFeedback/viewGivenFeedback.module').then(m => m.ViewGivenFeedbackModule)
+          }
+        ]
+      },
+      {
         path: '',
         redirectTo: '/individual/profile',
         pathMatch: 'full'

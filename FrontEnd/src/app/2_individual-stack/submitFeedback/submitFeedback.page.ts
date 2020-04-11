@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Feedback } from '../../7_services/feedback/feedback.model';
 import { FeedbackService } from '../../7_services/feedback/feedback.service';
 import { ValidationService } from '../../7_services/validation/validation.service';
-
+import { AuthenticationService } from '../../7_services/authentication/authentication.service';
 @Component({
   selector: 'app-submitFeedback',
   templateUrl: 'submitFeedback.page.html',
@@ -11,31 +12,49 @@ import { ValidationService } from '../../7_services/validation/validation.servic
 
 
 export class SubmitFeedbackPage implements OnInit {
-  feedback: string
+  feedbackText : string
+  feedback: Feedback
   institutionAddress: string
-  // search page should contain search organization component
-  constructor(private route: Router, private feedbackService: FeedbackService, private validationService: ValidationService) { }
+  
+  constructor(
+    private route: Router, 
+    private feedbackService: FeedbackService, 
+    private validationService: ValidationService,
+    private authenticationService: AuthenticationService
+    ) { }
 
   ngOnInit() {
 
-}
-
-  async validateAddress(address) {
-    // currently does not check if the user has had an interaction with the institution before.
-    // would this be a contract-based check?
-    this.institutionAddress = address
-    var bool = this.validationService.validateAddress(address);
-    var message = bool ? "Validated" : "Invalidated"
-    console.log(message);
   }
 
-  async validateFeedback(feedback) {
-    this.feedback = feedback;
+  handleFeedback(value) {
+    this.feedbackText = value;
+  }
+  
+  handleAddress(address) {
+    this.institutionAddress = address;
+  }
+
+  validateAddress() {
+    var result = this.validationService.validateAddress(this.institutionAddress) 
+    // console.log(result)
+    return result;
+  }
+
+  validateFeedback() {
+    this.feedbackText = this.feedbackText.trim()
+    var result = this.validationService.validateText(this.feedbackText)
+    // console.log(result)
+    return result;
   }
 
   async uploadFeedback() {
-    var userAddress = "0xB422d54Cc2b92A2462f035E31d34e11e61ff54a1" // registered individual
-    this.feedbackService.addFeedback(this.feedback, userAddress, this.institutionAddress);
+    if (this.validateAddress() && this.validateFeedback()) {
+      var userAddress = this.authenticationService.getUserAddress();
+      await this.feedbackService.addFeedback(this.feedbackText, userAddress, this.institutionAddress);
+    } else {
+      alert("Invalid address / feedback!")
+    }
   }
   
 }

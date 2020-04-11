@@ -6,11 +6,16 @@
       <ion-button (click)="handleClick()">Go <ion-icon slot="end" name="arrow-forward"></ion-icon></ion-button>
     </ion-buttons>
   </ion-item>
-
+  <br>
+  <ion-title>Feedback on Institution</ion-title>
+  <ion-list-header>
+    <ion-title>ID</ion-title>
+    <ion-title>Feedback</ion-title>
+  </ion-list-header>
   <ion-list *ngFor="let feedback of feedbacks">
     <ion-item>
-      <ion-label> {{feedbacks.indexOf(feedback)}} </ion-label>
-      <ion-title> {{feedback.description}} </ion-title> 
+      <ion-label> {{feedback.id}} </ion-label>
+      <ion-title> {{feedback.text}} </ion-title> 
     </ion-item>
   </ion-list>
 </ion-content>

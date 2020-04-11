@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { ValidationService } from '../7_services/validation/validation.service';
 import { Interaction } from '../7_services/interaction/interaction.model';
 import { InteractionService } from '../7_services/interaction/interaction.service';
+import { AuthenticationService } from '../7_services/authentication/authentication.service';
+import { IdentificationService } from '../7_services/identification/identification.service';
+
 
 @Component({
   selector: 'app-search-user-button',
@@ -9,22 +12,38 @@ import { InteractionService } from '../7_services/interaction/interaction.servic
   styleUrls: ['./search-user-button.component.scss'],
 })
 export class SearchUserButtonComponent implements OnInit {
-  userAddress : string
+  address : string
+  isValid : boolean
   interactions: Interaction[] = []
 
-  constructor(private validationService: ValidationService, private interactionService : InteractionService) {}
+  constructor(
+    private validationService: ValidationService, 
+    private interactionService : InteractionService,
+    private authenticationService : AuthenticationService,
+    private identificationService : IdentificationService
+    ) {}
 
   ngOnInit() {}
 
   validateInput(address) {
-    this.userAddress = address
-    var bool = this.validationService.validateAddress(address);
-    var message = bool ? "Validated" : "Invalidated"
-    console.log(message);
+    this.address = address
+    this.isValid = this.validationService.validateAddress(address);
   }
 
   async handleClick() {
-    this.interactions = await this.interactionService.retrieveAllInteractions(this.userAddress);
+    if (!this.isValid) {
+      alert("Input Address is not valid, please check and try again");
+    } else {
+      this.interactions = await this.interactionService.retrieveAllInteractions(this.address);      
+    }
+  }
+
+  getUserIdentity() {
+    return this.identificationService.getIdentity();
+  }
+
+  getUserAddress() {
+    return this.authenticationService.getUserAddress();
   }
 
 }

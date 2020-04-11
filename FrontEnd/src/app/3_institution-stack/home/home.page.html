@@ -1,14 +1,24 @@
+<ion-toolbar>
+  <ion-title>
+    BlockLife
+  </ion-title>
+</ion-toolbar>
+
 <ion-content>
-    <p>Institution Name Maybe</p>
-  
-    <!-- <ion-list *ngFor="let interaction of interactions">
-      <ion-item>
-        <ion-label> {{ interaction.id }}</ion-label>
-        <ion-title> {{ interaction.hash }}</ion-title> 
-        <ion-avatar>
-          <ion-img [src]="interaction.imageUrl"></ion-img>
-        </ion-avatar>
-      </ion-item>
-    </ion-list> -->
+    <ion-title>"Institution Name"</ion-title>
+    <br> 
+    <br>
+    <figure>
+      <ion-list-header>
+        <ion-title>ID</ion-title>
+        <ion-title>Content</ion-title>
+      </ion-list-header>
+      <ion-list *ngFor="let feedback of feedbacks">
+        <ion-item>
+          <ion-label> {{ feedbacks.indexOf(feedback) }}</ion-label>
+          <ion-label> {{ feedback.text }}</ion-label> 
+        </ion-item>
+      </ion-list>
+    </figure>
   </ion-content>
   

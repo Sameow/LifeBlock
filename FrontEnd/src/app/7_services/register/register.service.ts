@@ -22,6 +22,7 @@ export class RegisterService {
   }
 
   private async _registerUser(address : string) {
+    var name = "Bob"
     await fetch(Config.IP_ADDRESS + '/truffle/register/user', {
       method: 'POST',
           headers: {
@@ -29,7 +30,8 @@ export class RegisterService {
               'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-              address: address
+              address: address,
+              name : name
             }) 
         })
       .catch((error) => {console.log(error)})
@@ -37,11 +39,11 @@ export class RegisterService {
       .then((res) => {
         console.log(res);
         this.registerUserSuccess = true;
-        // this.interactions = res.message
       })
   }
 
   private async _registerInstitution(institution : string, user : string) {
+    var institutionName = "Google"
     await fetch(Config.IP_ADDRESS + '/truffle/register/institution', {
       method: 'POST',
           headers: {
@@ -50,15 +52,14 @@ export class RegisterService {
           },
           body: JSON.stringify({
             institution: institution,
-            user : user
+            user : user,
+            institutionName : institutionName
             }) 
         })
       .catch((error) => {console.log(error)})
       .then((response : Response) => response.json())
       .then((res) => {
         this.registerInstitutionSuccess = true;
-        console.log(res);
-        // this.interactions = res.message
       })
   }
 

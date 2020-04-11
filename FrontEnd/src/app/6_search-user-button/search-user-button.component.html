@@ -1,19 +1,22 @@
 <ion-content>
   <ion-item>
-    <ion-label position="stacked">Search User</ion-label>
+    <ion-label position="stacked">Search a User</ion-label>
     <ion-input clearInput (input)="validateInput($event.target.value)" placeholder="Enter Address of User"></ion-input>
     <ion-buttons slot="end">
       <ion-button (click)="handleClick()">Go <ion-icon slot="end" name="arrow-forward"></ion-icon></ion-button>
     </ion-buttons>
   </ion-item>
-
+  <br>
+  <ion-list-header>
+    <ion-title>ID</ion-title>
+    <ion-title>Hash</ion-title>
+    <ion-title>Preview</ion-title>
+  </ion-list-header>
   <ion-list *ngFor="let interaction of interactions">
-    <ion-item>
+    <ion-item class="item">
       <ion-label> {{ interaction.id }}</ion-label>
       <ion-title> {{ interaction.hash }}</ion-title> 
-      <ion-avatar>
-        <ion-img [src]="interaction.imageUrl"></ion-img>
-      </ion-avatar>
+      <ion-img style="width: 100px; height: 100px;"  [src]="interaction.image"></ion-img>
     </ion-item>
   </ion-list>
 </ion-content>
