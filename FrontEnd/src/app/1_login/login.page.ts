@@ -5,13 +5,13 @@ import { AuthenticationService } from '../7_services/authentication/authenticati
 import { RegisterService } from '../7_services/register/register.service';
 import Web3 from 'web3';
 import { WEB3 } from '../web3'
-// import { provider } from 'web3-core';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
 })
+
 export class LoginPage implements OnInit {
   userAddress : string = ""
   constructor(
@@ -34,14 +34,14 @@ export class LoginPage implements OnInit {
     var result = await this.sendChallenge(message, signature);
     if (!result) {alert("Authentication failed, please try again!");return;} 
     var identity = await this.identificationService.fetchIdentity(address);
-    this.handleIdentity(identity);
+    await this.handleIdentity(identity);
   }
 
   async metaMaskInjection() {
-    var provider : Object = this.web3.currentProvider;
+    var provider : any = this.web3.currentProvider;
     if ('enable' in provider) {
       try {
-        await this.web3.currentProvider.enable();
+        await provider.enable();
       } catch(err) {
         alert(err)
       }
@@ -59,7 +59,7 @@ export class LoginPage implements OnInit {
     const from = address;
     const params = [challenge, from];
     const method = 'eth_signTypedData';
-    const provider = this.web3.currentProvider;
+    const provider : any = this.web3.currentProvider;
     return new Promise<string>(function(resolve, reject) {
       let output : string;
       try {
@@ -90,7 +90,7 @@ export class LoginPage implements OnInit {
   // 1 represents registered individual
   // 2 represents registered institutions
   // 3 represents contract owner
-  // else (0) represents new user
+  // else 0 represents new user
   async handleIdentity(identity : number) {
     if (identity == 2) {
       this.route.navigate(['/institution']);
@@ -98,7 +98,8 @@ export class LoginPage implements OnInit {
       this.route.navigate(['/owner']);
     } else {
       if (identity == 0) {
-        this.registerService.registerUser(this.userAddress);
+        await this.registerService.registerUser(this.userAddress);
+        await this.identificationService.fetchIdentity(this.userAddress);
       }
       this.route.navigate(['/individual']);
     }

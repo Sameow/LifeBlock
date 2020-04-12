@@ -1,0 +1,20 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Upload Interaction
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-item>
+    <ion-label position="stacked">Recipient Address</ion-label>
+    <ion-input id="address-input" clearInput (input)="handleAddressChange($event.target.value)" placeholder="Enter Address of Recepient"></ion-input>
+    <ion-label position="stacked">Upload Interaction</ion-label>
+    <ion-input id="file-input" (change)="handleImage($event)" accept="image/*" placeholder="Upload Image" type="file"></ion-input>
+    <ion-buttons slot="end">
+      <ion-button (click)="handleClick()">Upload <ion-icon slot="end" name="arrow-forward"></ion-icon></ion-button>
+    </ion-buttons>
+  </ion-item>
+
+</ion-content>

@@ -3,6 +3,7 @@ export interface Interaction {
     hash: string;
     image: string;
     dateTime: number;
-    isValid: boolean;
     issuer: string;
+    recipient: string;
+    isValid: boolean;
 }

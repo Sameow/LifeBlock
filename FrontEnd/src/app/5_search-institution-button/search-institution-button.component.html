@@ -1,7 +1,7 @@
 <ion-content>
   <ion-item>
     <ion-label position="stacked">Search An Institution</ion-label>
-    <ion-input clearInput (input)="validateInput($event.target.value)" placeholder="Enter Address of Institution"></ion-input>
+    <ion-input clearInput (input)="handleInput($event.target.value)" placeholder="Enter Address of Institution"></ion-input>
     <ion-buttons slot="end">
       <ion-button (click)="handleClick()">Go <ion-icon slot="end" name="arrow-forward"></ion-icon></ion-button>
     </ion-buttons>

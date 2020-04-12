@@ -11,13 +11,27 @@ export class FeedbackService {
   private feedbacks : Feedback[] = [];
   constructor() { }
 
+  // Fetches feedback for an institution
   async retrieveAllFeedback(address : string) {
+    this.feedbacks = [];
     await this.fetchFeedback(address);
     return [...this.feedbacks];
   }
 
+  // Fetches feedback added by an individual
+  async retrieveAllGivenFeedback(address : string) {
+    this.feedbacks = []
+    await this.fetchGivenFeedback(address);
+    return [...this.feedbacks];
+  }
+
+  async filterValidFeedback(array) {
+    return array.filter(element => {
+      return element['isValid'] == true
+    })
+  }
+
   async fetchFeedback(address : string) {
-    address = address.toLowerCase()
     await fetch(Config.IP_ADDRESS + '/truffle/feedback?address=' + (address), {
       method: 'GET',
       headers: {
@@ -26,67 +40,14 @@ export class FeedbackService {
       })
       .catch((error) => {console.log(error)})
       .then((response : Response) => response.json())
-      .then((res) => {
+      .then(async(res) => {
         if (res.success) {
-          this.feedbacks = res.message
+          this.feedbacks = await this.filterValidFeedback(res.message)
         }
       })
   }
 
-
-  async addFeedback(feedback: string, user: string, institution: string) {
-    user = user.toLowerCase()
-    institution = institution.toLowerCase()
-    await fetch(Config.IP_ADDRESS + '/truffle/feedback', {
-      method: 'POST',
-          headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-              feedback: feedback,
-              institution: institution,
-              user : user
-            }) 
-        })
-      .catch((error) => {console.log(error)})
-      .then((response : Response) => response.json())
-      .then((res) => {
-        console.log(res);
-      })
-  }
-  
-  async deleteFeedback(feedbackID: string, user: string, institution: string) {
-    await fetch(Config.IP_ADDRESS + '/truffle/feedback/invalidate', {
-      method: 'POST',
-          headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            feedbackID: feedbackID,
-              user: user,
-              institution: institution
-            }) 
-        })
-      .catch((error) => {console.log(error)})
-      .then((response : Response) => response.json())
-      .then((res) => {
-        console.log(res);
-        // this.interactions = res.message
-      })
-  
-
-  }
-
-
-  async retrieveAllGivenFeedback(address : string) {
-    await this.fetchGivenFeedback(address);
-    return [...this.feedbacks];
-  }
-
   async fetchGivenFeedback(address : string) {
-    address = address.toLowerCase()
     await fetch(Config.IP_ADDRESS + '/truffle/feedback/individual?address=' + (address), {
       method: 'GET',
       headers: {
@@ -95,13 +56,54 @@ export class FeedbackService {
       })
       .catch((error) => {console.log(error)})
       .then((response : Response) => response.json())
-      .then((res) => {
+      .then(async (res) => {
         if (res.success) {
-          this.feedbacks = res.message
+          this.feedbacks = await this.filterValidFeedback(res.message)
         }
       })
   }
 
-
-
+  async addFeedback(feedback: string, user: string, institution: string) {
+    return new Promise<Object>(async function(resolve, reject) {
+      await fetch(Config.IP_ADDRESS + '/truffle/feedback', {
+        method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                feedback: feedback,
+                institution: institution,
+                user : user
+              }) 
+          })
+        .catch((error) => {reject({success: false, msg: error})})
+        .then((response : Response) => response.json())
+        .then((res) => {
+          resolve(res)
+        })
+      })
+  }
+  
+  async invalidateFeedback(feedbackID: string, user: string, institution: string) {
+    return new Promise<Object>(async function(resolve, reject) {
+      await fetch(Config.IP_ADDRESS + '/truffle/feedback/invalidate', {
+        method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              feedbackID: feedbackID,
+                user: user,
+                institution: institution
+              }) 
+          })
+        .catch((error) => {reject({success: false, msg: error})})
+        .then((response : Response) => response.json())
+        .then((res) => {
+            resolve(res)
+          })
+      });
+  }
 }

@@ -3,6 +3,6 @@ export interface Feedback {
     text: string;
     date: string;
     issuer: string;
-    issuee: string;
+    recipient: string;
     isValid: boolean;
 }

@@ -1,0 +1,29 @@
+<ion-toolbar>
+  <ion-title>
+    BlockLife
+  </ion-title>
+</ion-toolbar>
+
+<ion-content>
+    <ion-title style="padding:10px">Welcome {{name}} !</ion-title>
+    <figure>
+      <ion-list-header>
+        <ion-title>ID</ion-title>
+        <ion-title>Content</ion-title>
+      </ion-list-header>
+      <ion-list *ngFor="let feedback of feedbacks">
+        <ion-item>
+          <ion-label> {{ feedbacks.indexOf(feedback) }}</ion-label>
+          <ion-label> {{ feedback.text }}</ion-label> 
+        </ion-item>
+      </ion-list>
+    </figure>
+    <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+      <ion-refresher-content
+        pullingText="Pull to refresh"
+        refreshingSpinner="circles"
+        refreshingText="Refreshing...">
+      </ion-refresher-content>
+    </ion-refresher>
+  </ion-content>
+  

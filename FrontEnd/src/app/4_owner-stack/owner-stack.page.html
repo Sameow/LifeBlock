@@ -1,11 +1,24 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Blocklife Owner Account</ion-title>
+    <ion-title>Welcome {{name}} !</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-
-  <app-approve-institution-button></app-approve-institution-button>
-
+  <ion-item>
+    <ion-label position="stacked">New Institution Address</ion-label>
+    <ion-input id="institution-address-input" clearInput (input)="onInstitutionAddressChange($event.target.value)" placeholder="Enter Address of Institution"></ion-input>
+    <ion-label position="stacked">New Institution Name</ion-label>
+    <ion-input id="institution-name-input" clearInput (input)="onInstitutionNameChange($event.target.value)" placeholder="Enter Name of Institution"></ion-input>
+    <ion-buttons slot="end">
+      <ion-button (click)="registerInstitution()">Go <ion-icon slot="end" name="arrow-forward"></ion-icon></ion-button>
+    </ion-buttons>
+  </ion-item>
+  <ion-item>
+    <ion-label position="stacked">Approve Institution as CA</ion-label>
+    <ion-input id="ca-address-input" clearInput (input)="onCAAddressChange($event.target.value)" placeholder="Enter Address"></ion-input>
+    <ion-buttons slot="end">
+      <ion-button (click)="authorizeInstitution()">Go <ion-icon slot="end" name="arrow-forward"></ion-icon></ion-button>
+    </ion-buttons>
+  </ion-item>
 </ion-content>

@@ -34,7 +34,8 @@ async function handleHashes(hashArray) {
     var hashAscii = web3.utils.toAscii(hash);
     var image = imageArray[index]
     var issuer = element['issuer']
-    output.push({id : index, hash : hashAscii, image, dateTime, isValid, issuer})  
+    var recipient = element['recipient']
+    output.push({id : index, hash : hashAscii, image, dateTime, issuer, recipient, isValid})  
   })
   return output;
 }
@@ -42,27 +43,46 @@ async function handleHashes(hashArray) {
 // Transform data into the required format to send frontend
 async function handleFeedback(feedbackArray) {
   output = []
-  feedbackArray.forEach(async(element, index) => {
+  feedbackArray.forEach(async(element) => {
     var id = element['id']
     var text = web3.utils.hexToAscii(element['text'])
     var dateTime = element['dateTime']
     var issuer = element['issuer']
-    var issuee = element['issuee']
+    var recipient = element['recipient']
     var isValid = element['isValid']
-    console.log(issuee);
-    console.log('issuee');
-    output.push({id,text,dateTime,issuer, issuee, isValid})
+    output.push({id, text, dateTime, issuer, recipient, isValid})
   });
   return output;
 }
 
 // Retrieves the identity of user (unregistered, individual, institution, contract owner)
 router.get('/identity', cors(), async function(req,res,next) {
-  var address = req.query.address.toString().toLowerCase();
-  var mappedAddress = global.hardMap[address];
-  await ecosystemInstance.methods.checkUserIdentity(mappedAddress).call({from : mappedAddress,  gas: 1000000})
+  var address = req.query.address;
+  address = global.hardMap[address];
+  if (!web3.utils.isAddress(address)) {
+    res.send({'success' : false, 'message' : `Checksum for address is incorrect`});
+    return;
+  }    
+  await ecosystemInstance.methods.checkUserIdentity(address).call({from : address,  gas: 1000000})
   .then((result) => {
     res.send({'success' : true, 'message' : result})
+  })
+  .catch((err) => {
+    res.send({'success' : false, 'message' : err})
+  })
+})
+
+// Retrieves the name of user
+router.get('/name', cors(), async function(req,res,next) {
+  var address = req.query.address;
+  address = global.hardMap[address];
+  if (!web3.utils.isAddress(address)) {
+    res.send({'success' : false, 'message' : `Checksum for address is incorrect`});
+    return;
+  }
+  await ecosystemInstance.methods.getName(address).call({from : address,  gas: 1000000})
+  .then((result) => {
+    res.send({'success' : true, 'message' : web3.utils.hexToAscii(result)})
   })
   .catch((err) => {
     res.send({'success' : false, 'message' : err})
@@ -74,7 +94,10 @@ router.post('/register/user', cors(), async function(req, res, next) {
   var address = req.body.address;
   address = global.hardMap[address];
   var name = web3.utils.asciiToHex(req.body.name);
-  if (!web3.isAddress(address)) return;
+  if (!web3.utils.isAddress(address)) {
+    res.send({'success' : false, 'message' : `Checksum for address is incorrect`});
+    return;
+  }
   await ecosystemInstance.methods.registerIndividual(name).send({from : address, gas : 1000000})
   .then((result) => {
     res.send({'success' : true, 'message' : `User ${address} has been successfully registered`})
@@ -91,11 +114,32 @@ router.post('/register/institution', cors(), async function(req, res, next) {
   var institutionName = web3.utils.asciiToHex(req.body.institutionName);
   institution = global.hardMap[institution];
   user = global.hardMap[user];
-
-  if (!web3.isAddress(institution) || !web3.isAddress(user)) return;
+  if (!web3.utils.isAddress(institution) || !web3.utils.isAddress(user)) {
+    res.send({'success' : false, 'message' : `Checksum for address is incorrect`});
+    return;
+  }    
   await ecosystemInstance.methods.registerInstitution(institution, institutionName).send({from : user, gas : 1000000})
   .then((result) => {
-    res.send({'success' : true, 'message' : `Institution ${address} has been successfully registered`})
+    res.send({'success' : true, 'message' : `Institution ${institutionName} has been successfully registered`})
+  })
+  .catch((err) => {
+    res.send({'success' : false, 'message' : err})
+  })
+});
+
+// Approve registered institutions as CA
+router.post('/approve', cors(), async function(req, res, next) {
+  var institution = req.body.institution;
+  var user = req.body.user;
+  institution = global.hardMap[institution];
+  user = global.hardMap[user];
+  if (!web3.utils.isAddress(institution) || !web3.utils.isAddress(user)) {
+    res.send({'success' : false, 'message' : `Checksum for address is incorrect`});
+    return;
+  }    
+  await ecosystemInstance.methods.approveCA(institution).send({from : user, gas : 1000000})
+  .then((result) => {
+    res.send({'success' : true, 'message' : `Institution ${institution} has been successfully approved as CA`})
   })
   .catch((err) => {
     res.send({'success' : false, 'message' : err})
@@ -106,6 +150,10 @@ router.post('/register/institution', cors(), async function(req, res, next) {
 router.get('/profile', cors(), async function(req, res, next) {
   var address = req.query.address;
   address = global.hardMap[address];
+  if (!web3.utils.isAddress(address)) {
+    res.send({'success' : false, 'message' : `Checksum for address is incorrect`});
+    return;
+  }    
   await ecosystemInstance.methods.getInteraction(address).call({from : address,  gas: 1000000})
   .then(async(result) => {
     if (result) {
@@ -124,6 +172,10 @@ router.get('/profile', cors(), async function(req, res, next) {
 router.get('/hash', cors(), async function(req, res, next) {
   var address = req.query.address;
   address = global.hardMap[address];
+  if (!web3.utils.isAddress(address)) {
+    res.send({'success' : false, 'message' : `Checksum for address is incorrect`});
+    return;
+  }
   await ecosystemInstance.methods.getUploadedInteraction().call({from : address, gas : 1000000})
   .then(async(result) => {
     if (result) {
@@ -143,14 +195,15 @@ router.post('/hash', cors(), async function(req, res, next) {
   var file = req.body.file;
   var hash = await fileToHash(file);
   var hexedHash = web3.utils.asciiToHex(hash)
-  var recipient = req.body.recipient;
-  recipient = global.hardMap[recipient];
-  console.log(`Recipient is ${recipient}`);
-  
-  var institution = req.body.institution;
-  institution = global.hardMap[institution];
-  console.log(`Institution is ${institution}`);
   var dateTime = Date.now()
+  var recipient = req.body.recipient;
+  var institution = req.body.institution;
+  recipient = global.hardMap[recipient];
+  institution = global.hardMap[institution];
+  if (!web3.utils.isAddress(recipient) || !web3.utils.isAddress(institution)) {
+    res.send({'success' : false, 'message' : `Checksum for address is incorrect`});
+    return;
+  }    
   await ecosystemInstance.methods.addInteraction(hexedHash, dateTime, recipient).send({from : institution,  gas: 1000000})
   .then((result) => {
     console.log(result)
@@ -165,37 +218,41 @@ router.post('/hash', cors(), async function(req, res, next) {
 router.post('/invalidate/hash', cors(), async function(req, res, next) {
   var hash = req.body.hash;
   hash = web3.utils.asciiToHex(hash)
-  var user = req.body.user;
-  user = global.hardMap[user];
-  await ecosystemInstance.methods.invalidateInteraction(hash, user).send({from : user,  gas: 1000000})
+  var recipient = req.body.recipient;
+  var from = req.body.from;
+  from = global.hardMap[from];
+  if (!web3.utils.isAddress(recipient) || !web3.utils.isAddress(from)) {
+    res.send({'success' : false, 'message' : `Checksum for address is incorrect`});
+    return;
+  }
+  await ecosystemInstance.methods.invalidateInteraction(hash, recipient).send({from : from,  gas: 1000000})
   .then((result) => {
     if (result.status) {
-      res.send({'success' : true, 'message' : `${hash} has been deleted for user ${user}`})
+      res.send({'success' : true, 'message' : `${hash} has been invalidated for user ${recipient}`})
     } else {
       res.send({'success' : false, 'message' : `Something went wrong please try again`})
     }
   })
   .catch((err) => {
+    console.log(err)
     res.send({'success' : false, 'message' : err})
   })
 });
 
-// Posting of feedback, available to public for now
-// Should only be available to people who have worked in the company before
+// Posting of feedback
 router.post('/feedback', cors(), async function(req, res, next) {
   var feedback = web3.utils.asciiToHex(req.body.feedback);
   var institution = req.body.institution;
   var user = req.body.user;
   var dateTime = Date.now()
-
   user = global.hardMap[user];
   institution = global.hardMap[institution];
-  console.log(`Institution is ${institution}`)
-  console.log(`User is ${user}`)
-  console.log('helloworld')
+  if (!web3.utils.isAddress(user) || !web3.utils.isAddress(institution)) {
+    res.send({'success' : false, 'message' : `Checksum for address is incorrect`});
+    return;
+  }
   await ecosystemInstance.methods.addFeedback(feedback, dateTime, institution).send({from : user, gas : 1000000})
   .then((result) => {
-    console.log(result)
     res.send({'success' : true, 'message' : `${feedback} has been successfully uploaded for institution ${institution}`})
   })
   .catch((err) => {
@@ -207,6 +264,10 @@ router.post('/feedback', cors(), async function(req, res, next) {
 router.get('/feedback', cors(), async function(req, res, next) {
   var address = req.query.address;
   address = global.hardMap[address];
+  if (!web3.utils.isAddress(address)) {
+    res.send({'success' : false, 'message' : `Checksum for address is incorrect`});
+    return;
+  }
   await ecosystemInstance.methods.getFeedback(address).call({from : address,  gas: 1000000})
   .then(async (result) => {
     if (!result.length) {
@@ -225,6 +286,10 @@ router.get('/feedback', cors(), async function(req, res, next) {
 router.get('/feedback/individual', cors(), async function(req, res, next) {
   var address = req.query.address;
   address = global.hardMap[address];
+  if (!web3.utils.isAddress(address)) {
+    res.send({'success' : false, 'message' : `Checksum for address is incorrect`});
+    return;
+  }
   await ecosystemInstance.methods.getAddedFeedback().call({from : address,  gas: 1000000})
   .then(async (result) => {
     if (!result.length) {
@@ -244,11 +309,18 @@ router.post('/feedback/invalidate', cors(), async function(req, res, next) {
   var feedbackID = req.body.feedbackID;
   var institution = req.body.institution;
   var user = req.body.user;
-  institution = global.hardMap[institution];
   user = global.hardMap[user];
-  await ecosystemInstance.methods.invalidateFeedback(web3.utils.toBN(feedbackID), institution).call({from : user,  gas: 1000000})
+  if (!web3.utils.isAddress(user) || !web3.utils.isAddress(institution)) {
+    res.send({'success' : false, 'message' : `Checksum for address is incorrect`});
+    return;
+  }
+  await ecosystemInstance.methods.invalidateFeedback(web3.utils.toBN(feedbackID), institution).send({from : user,  gas: 1000000})
   .then(async (result) => {
-    console.log(result)
+    if (result.status) {
+      res.send({'success' : true, 'message' : `${feedbackID} has been invalidated for institution ${institution}`})
+    } else {
+      res.send({'success' : false, 'message' : `Something went wrong please try again`})
+    }
   })
   .catch((err) => {
     res.send({'success' : false, 'message' : err})
