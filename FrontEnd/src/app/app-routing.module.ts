@@ -8,11 +8,11 @@ const routes: Routes = [
   },
   {
     path: '',
-    loadChildren: () => import('./2_individual-stack/tabs/tabs.module').then( m => m.TabsPageModule)
+    loadChildren: () => import('./2_individual-stack/2.1_individual/individual.module').then( m => m.IndividualPageModule)
   },
   {
     path: '',
-    loadChildren: () => import('./3_institution-stack/institution/institution.module').then( m => m.InstitutionPageModule)
+    loadChildren: () => import('./3_institution-stack/3.1_institution/institution.module').then( m => m.InstitutionPageModule)
   },
   {
     path: '',

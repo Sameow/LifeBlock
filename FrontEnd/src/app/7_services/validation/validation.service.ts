@@ -12,4 +12,12 @@ export class ValidationService {
     return (/^(0x){1}[0-9a-fA-F]{40}$/i.test(address));
   }
 
+  // Ensures text is in ascii form and not empty
+  validateText(text) {
+    if (!text) {
+      return false
+    }
+    return /^[\x00-\x7F]*$/.test(text);
+  }
+
 }

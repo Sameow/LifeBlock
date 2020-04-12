@@ -1,0 +1,35 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title >
+      Previously Uploaded Interactions
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+  <ion-list-header lines="inset" class='row' style="padding-bottom: 3%;">
+    <ion-title class='col' style="text-align: start;padding-top:2%;padding-bottom: 2%;">ID</ion-title>
+    <ion-title class='col' style="text-align: center;padding-top:2%;padding-bottom: 2%;">Issuee</ion-title>
+    <ion-title class='col' style="text-align: center;padding-top:2%;padding-bottom: 2%;">Hash</ion-title>
+    <ion-title class='col' style="text-align: end;padding-right: 10%;padding-top:2%;padding-bottom: 2%;">Preview</ion-title>
+  </ion-list-header>
+  <ion-list *ngFor="let interaction of interactions">
+      <ion-item class='row'>
+        <ion-text slot='start' class='col'> {{ interaction.id }}</ion-text>
+        <ion-title class='col' style="text-align: center;">{{ interaction.issuer }}</ion-title> 
+        <ion-title class='col' style="text-align: center;">{{ interaction.hash }}</ion-title> 
+        <ion-img (click)="handleImage(interaction)" slot='end' style="width: 100px; height: 100px; padding-bottom: 0.9%;"  [src]="interaction.image"></ion-img>
+        <ion-icon name="close" style="width: 5%;color: crimson;" slot='end' (click)="handleInvalidate(interaction)"></ion-icon>
+      </ion-item>
+  </ion-list>
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content
+      pullingText="Pull to refresh"
+      refreshingSpinner="circles"
+      refreshingText="Refreshing...">
+    </ion-refresher-content>
+  </ion-refresher>
+
+
+</ion-content>

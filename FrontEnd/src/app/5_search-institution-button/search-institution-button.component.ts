@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ValidationService } from '../7_services/validation/validation.service';
-import Config from '../env.js'
+import { Feedback } from '../7_services/feedback/feedback.model';
+import { FeedbackService } from '../7_services/feedback/feedback.service';
 
 @Component({
   selector: 'app-search-institution-button',
@@ -11,35 +11,31 @@ import Config from '../env.js'
 
 export class SearchInstitutionButtonComponent implements OnInit {
   institutionAddress : string
-  feedbacks = []
-  // myControl = new FormControl('value', this.validateAddress(address));
+  feedbacks : Feedback[] = []
 
-  constructor(private validationService: ValidationService) {}
+  constructor(private validationService: ValidationService, private feedbackService: FeedbackService) {}
 
   ngOnInit() {}
 
-  validateInput(address) {
+  handleInput(address) {
     this.institutionAddress = address
-    var bool = this.validationService.validateAddress(address);
-    var message = bool ? "Validated" : "Invalidated"
-    console.log(message);
   }
 
-  handleClick() {
-    this.fetchFeedback(this.institutionAddress);
+  validateInput(address) {
+    return this.validationService.validateAddress(address);
   }
 
-  async fetchFeedback(institution : string) {
-    await fetch(Config.IP_ADDRESS + '/truffle/feedback?address=' + [institution] , {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'}
-      })
-      .catch((error) => {console.log(error)})
-      .then((response : Response) => response.json())
-      .then((res) => {
-        this.feedbacks = res.message
-      })
+  async handleClick() {
+    var result = this.validateInput(this.institutionAddress);
+    if (!result) {
+      alert("Invalid address! Please check again");
+    } else {
+      await this.retrieveAllFeedback(this.institutionAddress);
+    }
   }
+  
+  async retrieveAllFeedback(address : string) {
+    this.feedbacks = await this.feedbackService.retrieveAllFeedback(address);
+  }
+
 }

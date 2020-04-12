@@ -1,5 +1,26 @@
 # IS4302 Project 
 
+### Setting up of Login
+
+Ensure that you have metamask plugin install on your browser.
+
+Go the development.js (BackEnd/development.js) and change the address in accounts[0] to your own address.  You would now the the owner of the contract.
+
+
+Test case 1: Using BlockLife as an institution
+
+As the owner, first log into BlockLife, then register the institution's address, using the "Register Institution" form.
+
+If you would like this institution to be a CA as well, please do so, using the "Register CA" form.
+
+Now, switch your metamask address to the registered institution's address, and log in as an institution.
+
+
+Test case 2: Using BlockLife as an individual
+
+Simply log in using any metamask address, that has not been registered as an institution or contract owner.
+
+
 ### Setting up of truffle development 
 
 ###### Installing the required pakages globally
@@ -34,15 +55,3 @@ cd FrontEnd && npm install
 npm i @angular-devkit/build-angular@0.803.24 //to avoid an error
 
 ionic serve // do not close
-
-
-For testing purposes, here are the addresses of the users of this system
-0xEa9764d165461e4e729886A023b2BBd389CDA959 -- Contract Owner
-0xB422d54Cc2b92A2462f035E31d34e11e61ff54a1 -- User 1 Bob 
-0x8B6796841E411e725C16F18894c734FA44Fc0cD5 -- User 2 Peter
-0xb2FA54Eba47928530800f7479AEF15B7a915339d -- User 3 James
-0x28f33204e50Dd9b62A460Ed7431165f4A42fd339 -- Institution 1 Facebook
-0xEa27b334967Fa7864748c39918EA6234Cd420747 -- Institution 2 Amazon
-0x204729E93654fefc04E1614Ba634f69e362Cf226 -- Institution 3 Apple
-0xdAC014022A66ED4e617CE19102ee0DC28094147a -- Institution 4 Netflix
-0xac04944599Ca5BcD758AdBf49D338e31f3E139F6 -- Institution 5 Google

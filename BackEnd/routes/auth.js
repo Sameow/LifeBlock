@@ -14,24 +14,16 @@ const metaAuth = new MetaAuth({
     );
 
 router.get('/metaMask/:MetaAddress', metaAuth, cors(),(req, res) => {
-  // Request a challenge from the server
-//   res.send(req.metaAuth.challenge)
   if (req.metaAuth && req.metaAuth.challenge) {
     res.send({"success":true,"msg":req.metaAuth.challenge})
   }
 });
 
 router.get('/metaMask/:MetaMessage/:MetaSignature', metaAuth, cors(), (req, res) => {
-    console.log(req.metaAuth.recovered)
     if (req.metaAuth && req.metaAuth.recovered) {
-        // Signature matches the cache address/challenge
-        // Authentication is valid, assign JWT, etc.
         res.send({"success": true, "message" :req.metaAuth.recovered});
       } else {
-        // Sig did not match, invalid authentication
-        // res.send(req.metaAuth.recovered);
-        res.send({"success" : false})
-        // res.status(400).send();
+        res.send({"success" : false, "message" : "Invalid signature!"});
       };
 });
 

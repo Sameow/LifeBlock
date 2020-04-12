@@ -1,0 +1,19 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Submit Feedback
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-item>
+    <ion-label position="stacked">Institution Address</ion-label>
+    <ion-input id="address-input" clearInput (input)="handleAddress($event.target.value)" placeholder="Enter Address of Institution"></ion-input>
+    <ion-label position="stacked">Feedback</ion-label>
+    <ion-input id="feedback-input" clearInput (input)="handleFeedback($event.target.value)" placeholder="Enter Feedback"></ion-input>
+    <ion-buttons slot="end">
+      <ion-button (click)="uploadFeedback()">Go <ion-icon slot="end" name="arrow-forward"></ion-icon></ion-button>
+    </ion-buttons>
+  </ion-item>
+</ion-content>

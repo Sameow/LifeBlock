@@ -13,3 +13,13 @@ ganache-cli --seed IS4302 -e 10000000000000 -l 80000000
 0xac04944599Ca5BcD758AdBf49D338e31f3E139F6 -- Institution 5 Google
 0x6700d8c5fACa495Fa9a71BD255E6806b65ec16dc
 
+
+
+
+
+
+0x109f0ce02e4813c2ea72b1584bbc3e5fa7ce24f2 -- institution
+0x1f15d5e91772335a5e247865cf694b744099fafc -- user
+0xc3b0ccf1f598201649cc4374900fee7090d128cd -- owner
+0xccaaf1d70ecc5e4e76316d47a7fc7bd2b00af10f -- new user
+0xe7f66fe2f12dad73eede65b53c4a0d48cc1a01a9 -- new institution

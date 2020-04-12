@@ -7,8 +7,13 @@ import Config from '../../env.js'
 export class AuthenticationService {
   generatedChallenge : Object[] = [];
   isAuthenticated : boolean = false;
+  private userAddress : string;
 
   constructor() { }
+
+  getUserAddress() {
+    return this.userAddress;
+  }
 
   async generateChallenge(address : string) {
     await this._retrieveChallenge(address);
@@ -49,11 +54,10 @@ export class AuthenticationService {
       .then((response : Response) => response.json())
       .then((res) => {
         if (res.success) {
+          this.userAddress = res.message.toLowerCase();
           this.isAuthenticated = true;
         }
     });
   }
-
-
 
 }
